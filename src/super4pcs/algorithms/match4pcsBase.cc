@@ -404,7 +404,7 @@ bool Match4PCSBase::ComputeRigidTransformation(
 
 
       //Log<LogLevel::Verbose>( ratio1, " ", ratio2, " ", ratioDev, " ", ratioMean);
-      scaleEst = ratioMean;
+      //scaleEst = ratioMean;
 
       // apply scale factor to q
       q0 = q0*scaleEst;
@@ -417,6 +417,7 @@ bool Match4PCSBase::ComputeRigidTransformation(
   if (vector_p1.squaredNorm() == 0) return kLargeNumber;
   vector_p1.normalize();
   VectorType vector_p2 = (p2 - p0) - ((p2 - p0).dot(vector_p1)) * vector_p1;
+
   if (vector_p2.squaredNorm() == 0) return kLargeNumber;
   vector_p2.normalize();
   VectorType vector_p3 = vector_p1.cross(vector_p2);
@@ -486,7 +487,7 @@ bool Match4PCSBase::ComputeRigidTransformation(
 
   Eigen::Transform<Scalar, 3, Eigen::Affine> etrans (Eigen::Transform<Scalar, 3, Eigen::Affine>::Identity());
   transform = etrans
-      .scale(scaleEst)
+     // .scale(scaleEst)
       .translate(centroid1)
       .rotate(rotation)
       .translate(-centroid2)

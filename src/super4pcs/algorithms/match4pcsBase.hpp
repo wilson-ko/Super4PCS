@@ -222,10 +222,8 @@ Match4PCSBase::Perform_N_steps(int n,
   // The transformation has been computed between the two point clouds centered
   // at the origin, we need to recompute the translation to apply it to the original clouds
   auto getGlobalTransform = [this](Eigen::Ref<MatrixType> transformation){
-    Eigen::Matrix<Scalar, 3, 3> rot, scale;
-    Eigen::Transform<Scalar, 3, Eigen::Affine> (transform_).computeRotationScaling(&rot, &scale);
     transformation = transform_;
-    transformation.col(3) = (qcentroid1_ + centroid_P_ - ( rot * scale * (qcentroid2_ + centroid_Q_))).homogeneous();
+    transformation.col(3) = (qcentroid1_ + centroid_P_ - ( transform_.block<3,3>(0,0) * (qcentroid2_ + centroid_Q_))).homogeneous();
   };
 
   Scalar last_best_LCP = best_LCP_;
@@ -426,11 +424,11 @@ bool Match4PCSBase::TryCongruentSet(
                                  options_.max_angle * pi / 180.0, // maximum per-dimension angle, check return value to detect invalid cases
                                  transform,          // output: transformation
                                  rms,                // output: rms error of the transformation between the basis and the congruent quad
-                             #ifdef MULTISCALE
-                                 true
-                             #else
+                            // #ifdef MULTISCALE
+                            //     true
+                            // #else
                                  false
-                             #endif
+                            // #endif
                                  );             // state: compute scale ratio ?
 
       if (ok && rms >= Scalar(0.)) {
@@ -449,10 +447,9 @@ bool Match4PCSBase::TryCongruentSet(
           auto getGlobalTransform =
               [this, transform, centroid1, centroid2]
               (Eigen::Ref<MatrixType> transformation){
-            Eigen::Matrix<Scalar, 3, 3> rot, scale;
-            Eigen::Transform<Scalar, 3, Eigen::Affine> (transform).computeRotationScaling(&rot, &scale);
             transformation = transform;
-            transformation.col(3) = (centroid1 + centroid_P_ - ( rot * scale * (centroid2 + centroid_Q_))).homogeneous();
+            //transformation.col(3) = (centroid1 + centroid_P_ - ( rot * scale * (centroid2 + centroid_Q_))).homogeneous();
+            transformation.col(3) = (centroid1 + centroid_P_ - ( transformation.block<3, 3>(0, 0) * (centroid2 + centroid_Q_))).homogeneous();
           };
 
           if (v.needsGlobalTransformation())
