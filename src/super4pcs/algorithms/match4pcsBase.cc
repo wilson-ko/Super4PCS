@@ -442,8 +442,8 @@ bool Match4PCSBase::ComputeRigidTransformation(
   rotate_q.row(1) = vector_q2;
   rotate_q.row(2) = vector_q3;
 
-  rotation = rotate_p.transpose() * rotate_q;
-
+  //rotation = rotate_p.transpose() * rotate_q;
+  rotation = rotate_p * rotate_q.transpose();
 
   // Discard singular solutions. The rotation should be orthogonal.
   if (((rotation * rotation).diagonal().array() - Scalar(1) > kSmallNumber).any())
